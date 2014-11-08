@@ -73,6 +73,10 @@
 {% endblock %}
 
 {% block content %}
+{% with module_name=opts.module_name|lower|slugify %}
+    {% render_with_template_if_exist opts.app_label|lower|add:"/admin_model_"|add:module_name|add:"_change_list.html" "" %}
+{% endwith %}
+
 <form class="" id="changelist-form" action="" method="post"{% if cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
 
 {% if cl.formset.errors %}
