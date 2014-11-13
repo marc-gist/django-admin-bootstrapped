@@ -12,6 +12,13 @@
     <script type="text/javascript" src="{{ jsi18nurl|default:'../../jsi18n/' }}"></script>
   {% endif %}
   {{ media.css }}
+    <style>
+    li.dropdown-header {
+        font-size: 14px;
+        background-color: dimgrey;
+        color: black;
+    }
+    </style>
 {% endblock %}
 
 {% block extrahead %}
@@ -89,7 +96,7 @@
 {% endif %}
 
 
-{% with app_name=cl.opts.model_name|lower|slugify %}
+{% with app_name=cl.opts.module_name|lower|slugify %}
     {% render_with_template_if_exist cl.opts.app_label|lower|add:"/admin_app_"|add:app_name|add:"_description.html" "" %}
 {% endwith %}
 
