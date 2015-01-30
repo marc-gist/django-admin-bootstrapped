@@ -75,7 +75,7 @@
 {% endblock %}
 
 {% block content %}
-{% with module_name=opts.module_name|lower|slugify %}
+{% with module_name=opts.model_name|lower|slugify %}
     {% render_with_template_if_exist opts.app_label|lower|add:"/admin_model_"|add:module_name|add:"_change_list.html" "" %}
 {% endwith %}
 
@@ -91,7 +91,7 @@
 {% endif %}
 
 
-{% with app_name=cl.opts.module_name|lower|slugify %}
+{% with app_name=cl.opts.model_name|lower|slugify %}
     {% render_with_template_if_exist cl.opts.app_label|lower|add:"/admin_app_"|add:app_name|add:"_description.html" "" %}
 {% endwith %}
 
