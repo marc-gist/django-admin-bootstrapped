@@ -1,4 +1,4 @@
-/* overrides to default admin style */
+/* overrides to default admin and bootstrap styles */
 
 a:active,
 a:focus {
@@ -7,19 +7,19 @@ a:focus {
 .sidebar-nav {
     padding: 9px 0;
 }
-.form-group input[type=text] {
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box;         /* Opera/IE 8+ */
-    height: 28px;
-}
-.form-group select {
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box;         /* Opera/IE 8+ */
-}
 .controls > p {
     padding-top: 5px;
+}
+.controls > ul {
+    list-style-type: none;
+    padding-left: 0px;
+}
+.controls > ul label {
+    font-size: 14px;
+}
+.controls > ul .form-control {
+    height: auto;
+    margin: 9px 0;
 }
 .selector .selector-filter label {
     display: none;
@@ -124,4 +124,14 @@ td.action-checkbox {
     color: #fff;
     padding: 6px 12px;
     margin-top: 8px;
+}
+
+#content-navbar-collapse .btn-primary:hover,
+#content-navbar-collapse .btn-primary:focus {
+    background-color: #265a88;
+}
+
+.form-control-inline {
+    width: auto;
+    display: inline;
 }

@@ -1,3 +1,4 @@
+{% load firstof from future %}
 {% load admin_static bootstrapped_goodies_tags %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
@@ -22,6 +23,7 @@
     <script type="text/javascript">
     //<![CDATA[
         window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";
+        window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";
     //]]>
     </script>
     <script src="{% static "admin/js/jquery-1.9.1.min.js" %}"></script>
@@ -131,19 +133,21 @@
         <div class="navbar navbar-default">
             <div class="navbar-inner">
                 {% block pretitle %}{% endblock %}
-                {% block content_title %}
-                    {% if title %}
                     <div class="navbar-header">
+                        {% block content-navbar-collapse %}
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#content-navbar-collapse" aria-expanded="false" aria-controls="navbar">
                             <span class="sr-only">Toggle navigation</span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
+                        {% endblock %}
+                    {% block content_title %}
+                    {% if title %}
                         <a class="navbar-brand">{% render_with_template_if_exist title|lower|add:"/admin_app_name.html" title %}</a>
-                    </div>
                     {% endif %}
-                {% endblock %}
+                    {% endblock %}
+                    </div>
                 {% block object-tools %}{% endblock %}
             </div>
         </div>
@@ -154,7 +158,7 @@
         <div class="row">
             <div class="col-sm-12">
                 {% for message in messages %}
-                <div class="alert alert-info {% if message.tags %}{{ message.tags }}{% endif %}">
+                <div class="alert {{ message.tags|default:"alert-info" }}">
                     {{ message }}
                 </div>
                 {% endfor %}
