@@ -1,6 +1,6 @@
-{% load firstof from future %}
-{% load admin_static bootstrapped_goodies_tags %}
+{% load i18n admin_static bootstrapped_goodies_tags %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
     <title>{% block title %}{% endblock %}</title>
@@ -8,18 +8,13 @@
 
     {% block extrastyle %}{% endblock %}
 
-    <!-- Le styles, placed after extrastyle to correctly override default styling -->
     <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet"/>
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-    </style>
-    <link href="{% static "bootstrap/css/bootstrap-theme.min.css" %}" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/overrides.css" %}" />
+    {% if LANGUAGE_BIDI %}
+    <link href="{% static "bootstrap-rtl/css/bootstrap-rtl.min.css" %}" rel="stylesheet"/>
+    <link href="{% static "bootstrap-rtl/css/bootstrap-flipped.min.css" %}" rel="stylesheet"/>
+    {% endif %}
 
-    <!-- <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" /> -->
     <script type="text/javascript">
     //<![CDATA[
         window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";
@@ -66,16 +61,29 @@
                 </div>
                 <div id="header-navbar-collapse" class="navbar-collapse collapse navbar-{% if LANGUAGE_BIDI %}left{% else %}right{% endif %}">
                     <ul class="nav navbar-nav">
-                        {% if user.is_active and user.is_staff %}
+                        {% if has_permission %}
+                        {% block usertools %}
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Welcome,' %} <strong>{% filter force_escape %}{% firstof user.get_short_name user.get_username user.first_name user.username %}{% endfilter %}</strong> <span class="caret"></span></a>
+                            {% block welcome-msg %}
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Welcome,' %} <strong>{% filter force_escape %}{% firstof user.get_short_name user.get_username %}{% endfilter %}</strong> <span class="caret"></span></a>
+                            {% endblock %}
                             <ul class="dropdown-menu">
+                                {% if site_url %}
+                                    <li><a href="{{ site_url }}">{% trans 'View site' %}</a></li>
+                                {% endif %}
+                                {% if user.is_active and user.is_staff %}
+                                    {% url 'django-admindocs-docroot' as docsroot %}
+                                    {% if docsroot %}
+                                        <li><a href="{{ docsroot }}">{% trans 'Documentation' %}</a></li>
+                                    {% endif %}
+                                {% endif %}
                                 {% if user.has_usable_password %}
                                 <li><a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a></li>
                                 {% endif %}
                                 <li><a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a></li>
                             </ul>
                         </li>
+                        {% endblock %}
                         {% block languages %}
                         <li class="divider-vertical"></li>
                         {% language_selector %}
@@ -89,10 +97,10 @@
                                 {% for entry in admin_log %}
                                 <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
                                     <a href="{% if entry.is_deletion or not entry.get_admin_url %}#{% else %}{{ entry.get_admin_url }}{% endif %}">
-                                        <i class="icon-{% if entry.is_addition %}plus{% endif %}{% if entry.is_change %}edit{% endif %}{% if entry.is_deletion %}remove{% endif %}"></i>
+                                        <i class="glyphicon glyphicon-{% if entry.is_addition %}plus{% endif %}{% if entry.is_change %}edit{% endif %}{% if entry.is_deletion %}remove{% endif %}"></i>
                                         {{ entry.object_repr }}
                                         {% if entry.content_type %}
-                                        <span class="mini quiet">({% filter capfirst %}{% trans entry.content_type.name %}{% endfilter %})</span>
+                                        <span class="mini quiet">({% filter capfirst %}{{ entry.content_type }}{% endfilter %})</span>
                                         {% else %}
                                         <span class="mini quiet">({% trans 'Unknown content' %})</span>
                                         {% endif %}
@@ -144,7 +152,7 @@
                         {% endblock %}
                     {% block content_title %}
                     {% if title %}
-                        <a class="navbar-brand">{% render_with_template_if_exist title|lower|add:"/admin_app_name.html" title %}</a>
+                        <span class="navbar-brand">{% render_with_template_if_exist title|lower|add:"/admin_app_name.html" title %}</span>
                     {% endif %}
                     {% endblock %}
                     </div>
@@ -159,7 +167,7 @@
             <div class="col-sm-12">
                 {% for message in messages %}
                 <div class="alert {{ message.tags|default:"alert-info" }}">
-                    {{ message }}
+                    {{ message|capfirst }}
                 </div>
                 {% endfor %}
             </div>
