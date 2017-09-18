@@ -1,5 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse, NoReverseMatch
+from django.urls import reverse, NoReverseMatch
 from django.forms.widgets import Select
 from django.utils.encoding import force_text
 from django.utils.html import format_html
